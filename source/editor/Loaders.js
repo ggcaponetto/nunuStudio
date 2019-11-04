@@ -1,3 +1,4 @@
+"use strict";
 
 /**
  * Load texture from file object, checks the type of the file, can be used to load all types of textures
@@ -66,35 +67,66 @@ Editor.loadTexture = function(file, onLoad)
 		if(extension === "dds")
 		{
 			var loader = new THREE.DDSLoader();
-			var texture = loadCompressedTexture(loader._parser(reader.result));	
+			var texture = loadCompressedTexture(loader.parse(reader.result));
+			texture.name = name;
+			Editor.addAction(new AddResourceAction(texture, Editor.program, "textures"));
 		}
 		else if(extension === "pvr")
 		{
 			var loader = new THREE.PVRLoader();
-			var texture = loadCompressedTexture(loader._parser(reader.result));	
+			var texture = loadCompressedTexture(loader.parse(reader.result));
+			texture.name = name;
+			Editor.addAction(new AddResourceAction(texture, Editor.program, "textures"));
 		}
 		else if(extension === "ktx")
 		{
 			var loader = new THREE.KTXLoader();
-			var texture = loadCompressedTexture(loader._parser(reader.result));	
+			var texture = loadCompressedTexture(loader.parse(reader.result));
+			texture.name = name;
+			Editor.addAction(new AddResourceAction(texture, Editor.program, "textures"));
 		}
 		else if(extension === "tga")
 		{
 			var loader = new THREE.TGALoader();
 			var jpeg = loader.parse(reader.result).toDataURL("image/jpeg", 1.0);
+
 			var image = new Image(jpeg, "jpeg");
-			var texture = new Texture(image);
 			Editor.addAction(new AddResourceAction(image, Editor.program, "images"));
+			
+			var texture = new Texture(image);
+			texture.name = name;
+			Editor.addAction(new AddResourceAction(texture, Editor.program, "textures"));
+		}
+		else if(extension === "basis")
+		{
+			var renderer = new THREE.WebGLRenderer({alpha: true});
+
+			var loader = new THREE.BasisTextureLoader();
+			loader.setTranscoderPath(Global.FILE_PATH + "wasm/basis/");
+			loader.detectSupport(renderer);
+			loader._createTexture(reader.result).then(function(texture)
+			{
+				texture.encoding = THREE.sRGBEncoding;
+				texture.name = name;
+				Editor.addAction(new AddResourceAction(texture, Editor.program, "textures"));
+			}).catch(function(error)
+			{
+				Editor.alert("Error decoding basis texture.");
+				console.error("nunuStudio: Error decoding basis texture.", error);
+			});
+
+			renderer.dispose();
 		}
 		else
 		{
 			var image = new Image(reader.result, extension);
 			var texture = new Texture(image);
+			texture.name = name;
 			Editor.addAction(new AddResourceAction(image, Editor.program, "images"));
+			Editor.addAction(new AddResourceAction(texture, Editor.program, "textures"));
 		}
 
-		texture.name = name;
-		Editor.addAction(new AddResourceAction(texture, Editor.program, "textures"));
+
 
 		if(onLoad !== undefined)
 		{
@@ -256,7 +288,7 @@ Editor.loadModel = function(file, parent)
 		else if(extension === "obj")
 		{
 			var materials = null;
-
+			
 			//Look for MTL file
 			if(Nunu.runningOnDesktop())
 			{
@@ -266,10 +298,10 @@ Editor.loadModel = function(file, parent)
 
 					if(FileSystem.fileExists(mtl))
 					{
-						console.log("nunuStudio: MTL Found");
+						console.log("nunuStudio: MTL file found.", path);
 						var mtlLoader = new THREE.MTLLoader()
 						mtlLoader.setPath(path);
-						materials = mtlLoader.parse(FileSystem.readFile(mtl));
+						materials = mtlLoader.parse(FileSystem.readFile(mtl), path);
 					}
 				}
 				catch(f)

@@ -1,6 +1,7 @@
 YUI.add("yuidoc-meta", function(Y) {
    Y.YUIDoc = { meta: {
     "classes": [
+        "AfterimagePass",
         "AmbientLight",
         "AnimationMixer",
         "AnimationTimer",
@@ -11,6 +12,7 @@ YUI.add("yuidoc-meta", function(Y) {
         "Base64Utils",
         "BloomPass",
         "BokehPass",
+        "BrowserView",
         "BufferUtils",
         "ByteArrayUtils",
         "CSS3DObject",
@@ -61,7 +63,11 @@ YUI.add("yuidoc-meta", function(Y) {
         "ObjectUtils",
         "OrbitControls",
         "OrthographicCamera",
+        "ParticleDistributions",
         "ParticleEmitter",
+        "ParticleEmitterControl",
+        "ParticleEmitterControlOptions",
+        "ParticleGroup",
         "Pass",
         "PerspectiveCamera",
         "PhysicsGenerator",
@@ -80,7 +86,9 @@ YUI.add("yuidoc-meta", function(Y) {
         "SSAOShader",
         "Scene",
         "Script",
+        "ShaderAttribute",
         "ShaderPass",
+        "ShaderUtils",
         "Skeleton",
         "SkinnedMesh",
         "Sky",
@@ -90,6 +98,7 @@ YUI.add("yuidoc-meta", function(Y) {
         "SpotLight",
         "Sprite",
         "SpriteSheetTexture",
+        "TargetConfig",
         "TechnicolorPass",
         "TextBitmap",
         "TextFile",
@@ -101,6 +110,7 @@ YUI.add("yuidoc-meta", function(Y) {
         "TizenKeyboard",
         "Tree",
         "TreeUtils",
+        "TypedArrayHelper",
         "UnrealBloomPass",
         "VRControls",
         "Video",
@@ -108,7 +118,8 @@ YUI.add("yuidoc-meta", function(Y) {
         "VideoStream",
         "VideoTexture",
         "Viewport",
-        "WebcamTexture"
+        "WebcamTexture",
+        "{Object} ParticleGroupOptions"
     ],
     "modules": [
         "Animation",
@@ -146,7 +157,7 @@ YUI.add("yuidoc-meta", function(Y) {
         {
             "displayName": "Animations",
             "name": "Animations",
-            "description": "Spine animation object, to used with animation produced inside Esoteric spine.\n\nBased on the official threejs runtime code available at https://github.com/EsotericSoftware/spine-runtimes.\n\nMore information abou spine available here www.esotericsoftware.com."
+            "description": "Spine animation object, to used with animation produced inside Esoteric spine.\n\nBased on the official three.js runtime code available at https://github.com/EsotericSoftware/spine-runtimes.\n\nMore information abou spine available here www.esotericsoftware.com."
         },
         {
             "displayName": "Audio",
@@ -231,7 +242,7 @@ YUI.add("yuidoc-meta", function(Y) {
         {
             "displayName": "Runtime",
             "name": "Runtime",
-            "description": "nunuStudio\nMIT license (http://opensource.org/licenses/MIT)\n  \nClass used to store nunuStudio development version and timestamp.\n\nContains methods to check browser feature support."
+            "description": "nunuStudio core main file.\n  \nStore nunuStudio development version and timestamp and contains global method to check browser feature support."
         },
         {
             "displayName": "Script",

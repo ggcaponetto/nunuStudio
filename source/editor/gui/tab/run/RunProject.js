@@ -15,6 +15,14 @@ function RunProject(parent, closeable, container, index)
 	var self = this;
 
 	/**
+	 * Rendering canvas element where the program is presented.
+	 *
+	 * @attribute canvas
+	 * @type {RendererCanvas}
+	 */
+	this.canvas = new RendererCanvas(this, Editor.program.rendererConfig);
+	
+	/**
 	 * Keyboard input object.
 	 *
 	 * @attribute keyboard
@@ -31,31 +39,6 @@ function RunProject(parent, closeable, container, index)
 	 * @type {Mouse}
 	 */
 	this.mouse = new Mouse(window, true);
-
-	/**
-	 * WebGL renderer used to draw the objects
-	 *
-	 * @attribute renderer
-	 * @type {THREE.WebGLRenderer}
-	 */
-	this.renderer = null;
-
-	/**
-	 * Canvas element to where the renderer outputs.
-	 *
-	 * @attribute canvas
-	 * @type {DOM}
-	 */
-	this.canvas = null;
-
-	/**
-	 * Indicates if the background of the canvas is transparent or not.
-	 *
-	 * @attribute alpha
-	 * @type {Boolean}
-	 */
-	this.alpha = true;
-	this.resetCanvas();
 
 	/**
 	 * Program being run on this tab.
@@ -148,15 +131,9 @@ RunProject.prototype = Object.create(TabElement.prototype);
 RunProject.prototype.reloadContext = RendererCanvas.prototype.reloadContext;
 RunProject.prototype.forceContextLoss = RendererCanvas.prototype.forceContextLoss;
 
-RunProject.prototype.createRenderer = function()
-{
-	this.renderer = Editor.program.rendererConfig.createRenderer(this.canvas);
-};
-
-
 RunProject.prototype.activate = function()
 {
-	this.createRenderer();
+	this.canvas.createRenderer();
 	this.updateSettings();
 
 	this.mouse.create();
@@ -203,12 +180,7 @@ RunProject.prototype.destroy = function()
 	this.mouse.dispose();
 	this.keyboard.dispose();
 
-	if(this.renderer !== null)
-	{
-		this.renderer.dispose();
-		this.renderer.forceContextLoss();
-		this.renderer = null;
-	}
+	this.canvas.forceContextLoss();
 };
 
 /**
@@ -285,7 +257,7 @@ RunProject.prototype.update = function()
 
 	try
 	{
-		this.program.render(this.renderer);
+		this.program.render(this.canvas.renderer);
 	}
 	catch(error)
 	{
@@ -306,7 +278,7 @@ RunProject.prototype.resetCanvas = function()
 {
 	RendererCanvas.prototype.resetCanvas.call(this);
 
-	this.mouse.setCanvas(this.canvas);
+	this.mouse.setCanvas(this.canvas.canvas);
 };
 
 /** 
@@ -343,10 +315,10 @@ RunProject.prototype.runProgram = function()
 		this.program.defaultCamera = new PerspectiveCamera(60, 1, 0.1, 1e5);
 		this.program.defaultCamera.position.set(0, 5, -5);
 		
-		this.program.setRenderer(this.renderer);
+		this.program.setRenderer(this.canvas.renderer);
 		this.program.setMouseKeyboard(this.mouse, this.keyboard);
 		this.program.initialize();
-		this.program.resize(this.canvas.width, this.canvas.height);
+		this.program.resize(this.canvas.canvas.width, this.canvas.canvas.height);
 	}
 	catch(error)
 	{
@@ -359,7 +331,7 @@ RunProject.prototype.runProgram = function()
 	//If program uses VR set button
 	if(this.program.vr === true)
 	{
-		if(Nunu.webvrAvailable())
+		if(Nunu.webVRAvailable())
 		{
 			//Show VR button
 			this.vrButton.setVisibility(true);
@@ -402,32 +374,6 @@ RunProject.prototype.restartProgram = function()
 	this.runProgram();
 };
 
-/**
- * Resize canvas and camera to match the size of the tab.
- *
- * Also applies the window.devicePixelRatio to the canvas size.
- *
- * @method resizeCanvas
- */
-RunProject.prototype.resizeCanvas = function()
-{
-	var width = this.size.x * window.devicePixelRatio;
-	var height = this.size.y * window.devicePixelRatio;
-
-	this.canvas.style.width = this.size.x + "px";
-	this.canvas.style.height = this.size.y + "px";
-
-	if(this.renderer !== null)
-	{
-		this.renderer.setSize(this.size.x, this.size.y, false);
-
-		if(this.program !== null)
-		{
-			this.program.resize(width, height);
-		}
-	}
-};
-
 RunProject.prototype.updateVisibility = function()
 {
 	TabElement.prototype.updateVisibility.call(this);
@@ -439,5 +385,11 @@ RunProject.prototype.updateSize = function()
 {
 	TabElement.prototype.updateSize.call(this);
 
-	this.resizeCanvas();
+	this.canvas.size.copy(this.size);
+	this.canvas.updateSize();
+
+	if(this.program !== null)
+	{
+		this.program.resize(this.canvas.size.x, this.canvas.size.y);
+	}
 };

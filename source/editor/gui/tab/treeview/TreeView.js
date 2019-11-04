@@ -22,10 +22,10 @@ function TreeView(parent, closeable, container, index)
 	this.element.style.backgroundColor = null;
 
 	this.search = new SearchBox(this);
-	this.search.element.style.backgroundColor = Editor.theme.barColor;;
+	this.search.element.style.backgroundColor = Editor.theme.barColor;
 	this.search.setOnChange(function()
-	{
-		self.selectByName(this.value);
+	{	
+		self.selectByName(self.search.search.getText());
 	});
 
 	this.program = null;
@@ -296,7 +296,7 @@ TreeView.prototype.updateChildPosition = function()
 
 	if(this.root !== null)
 	{
-		this.root.position.set(0, 22);
+		this.root.position.set(0, this.search.size.y);
 		this.root.updateInterface();
 
 		this.size.y = updateChildPosition(this.root, 42, 1, this.root.folded);
@@ -307,6 +307,6 @@ TreeView.prototype.updateSize = function()
 {
 	TabElement.prototype.updateSize.call(this);
 
-	this.search.size.set(this.size.x, 20);
+	this.search.size.set(this.size.x, 25);
 	this.search.updateInterface();
 };

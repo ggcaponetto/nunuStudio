@@ -11,6 +11,8 @@
 	},
 	"scripts": {
 		"start": "run --with-ffmpeg --mirror https://dl.nwjs.io/ .",
+		"cordova-requirements": "cd ./temp && cordova requirements",
+		"docs": "yuidoc -o ./docs/docs  -N -C -t  ./docs/theme -x lib ./source/core/",
 		"build": "cd script && node build.js",
 		"update": "cd script && node update.js",
 		"dist": "build --mirror https://dl.nwjs.io/ --with-ffmpeg --tasks win-x64 ./docs/editor",
@@ -31,14 +33,15 @@
 	"bugs": {
 		"url": "https://github.com/tentone/nunuStudio/issues"
 	},
-	"devDependencies": {
-		"yuidocjs": "",
-		"nwjs-builder-phoenix": "1.15.0"
-	},
 	"dependencies": {
-		"cordova": "^9.0.0"
+		"cordova": "~9.0.0",
+		"nwjs-builder-phoenix": "~1.15.0"
 	},
-	"chromium-args": "--use-angle=gl --ignore-gpu-blacklist --disable-raf-throttling --enable-gpu-async-worker-context",
+	"devDependencies": {
+		"yuidocjs": "~0.10.2",
+		"google-closure-compiler": "^20190301.0.0"
+	},
+	"chromium-args": "--ignore-gpu-blacklist --disable-raf-throttling --enable-gpu-async-worker-context",
 	"window": {
 		"icon": "source/files/icon.png",
 		"frame": true,
@@ -47,13 +50,16 @@
 		"min_width": 800,
 		"min_height": 600
 	},
+	"webkit": {
+		"plugin": false
+	},
 	"build": {
 		"appId": "io.tentone.nunustudio",
 		"output": "../../build/desktop/",
 		"outputPattern": "${NAME}_${VERSION}_${PLATFORM}_${ARCH}",
 		"ffmpegIntegration": false,
 		"packed": false,
-		"nwVersion": "0.37.4",
+		"nwVersion": "0.42.0",
 		"nwFlavor": "sdk",
 		"targets": [
 			"zip",
